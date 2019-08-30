@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:async' show Future;
 import 'package:csv/csv.dart';
 import 'package:flutter/services.dart' show rootBundle;
+import 'dart:io';
 
 const String app_title ='近くの駅';
 const String term_of_use =
@@ -41,12 +42,12 @@ class OpenDataState extends State<OpenData> {
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   List<List<dynamic>> data = [];
+  var myFile = new File('assets/SalesJan2009.csv');
 
   loadCSV() async {
-    final myData = await rootBundle.loadString("assets/SalesJan2009.csv");
-    List<List<dynamic>> csvTable = CsvToListConverter().convert(myData);
-
-    data = csvTable;
+    final myData = await rootBundle.loadString('assets/SalesJan2009.csv');
+    List<List<dynamic>> csvList = CsvToListConverter().convert(myData);
+    data = csvList;
   }
 
   @override
@@ -66,35 +67,28 @@ class OpenDataState extends State<OpenData> {
           title: Text(widget.title),
           bottom: TabBar(
               tabs: <Widget>[
-                Tab(text: 'ホーム', icon: Icon(Icons.home,),),
-                Tab(text: '利用条件', icon: Icon(Icons.info,),),
+                Tab(text: 'ホーム', icon: Icon(Icons.home),),
+                Tab(text: '利用条件', icon: Icon(Icons.info),),
               ]
           )
       ),
 
       body: TabBarView(
         children: <Widget>[
-          Table(
-            columnWidths: {
-              0: FixedColumnWidth(100.0),
-              1: FixedColumnWidth(200.0),
-            },
-            border: TableBorder.all(width: 1.0),
-            children: data.map((item) {
-              return TableRow(
-                  children: item.map((row) {
-                    return Container(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          row.toString(),
-                          style: TextStyle(fontSize: 20.0),
-                        ),
-                      ),
-                    );
-                  }).toList()
+          ListView.builder(
+            padding: EdgeInsets.all(10.0),
+            itemBuilder: (BuildContext context, int index){
+              return Card(
+                child: Container(
+                  height: 100.0,
+                  width: double.infinity,
+                  color: Colors.deepOrange,
+                  padding: EdgeInsets.all(10.0),
+                  margin: EdgeInsets.all(10.0),
+                  child: Text(data.toString()),
+                ),
               );
-            }).toList(),
+            },
           ),
           Padding(
             padding: EdgeInsets.all(16.0),
