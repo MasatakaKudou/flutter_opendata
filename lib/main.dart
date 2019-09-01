@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'dart:async' show Future;
-import 'package:csv/csv.dart';
+//import 'package:csv/csv.dart';
+import 'dart:async';
 import 'package:flutter/services.dart' show rootBundle;
-import 'dart:io';
 
 const String app_title ='近くの駅';
 const String term_of_use =
@@ -41,13 +40,51 @@ class OpenDataState extends State<OpenData> {
 
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  List<List<dynamic>> data = [];
-  var myFile = new File('assets/SalesJan2009.csv');
+  final _stringList = [];
+  Future<String> loadAsset() async {
+    return await rootBundle.loadString('assets/SalesJan2009.csv');
+  }
 
-  loadCSV() async {
-    final myData = await rootBundle.loadString('assets/SalesJan2009.csv');
-    List<List<dynamic>> csvList = CsvToListConverter().convert(myData);
-    data = csvList;
+  void _buildStringList() async {
+    setState(() {
+      loadAsset().then((String value){
+        setState(() {
+          print(value);
+          var _splitString = value.split(" ");
+          if(_splitString.length > _stringList.length){
+            _stringList.addAll([]..length = _splitString.length);
+            for(var i=0; i<_stringList.length; i++) {
+              _stringList[i] = _splitString[i];
+            }
+          }
+        });
+      });
+    });
+}
+
+  Widget _buildStringListView() {
+    _buildStringList();
+    return ListView.builder(
+      padding: EdgeInsets.all(10.0),
+      itemBuilder: (context, i) {
+        if (i.isOdd) return Divider();
+        final index = i ~/ 2;
+        return _buildString(_stringList[index]);
+      },
+    );
+  }
+
+  Widget _buildString(var stringList){
+    return Card(
+      child: Container(
+        height: 100.0,
+        width: double.infinity,
+        color: Colors.deepOrange,
+        padding: EdgeInsets.all(10.0),
+        margin: EdgeInsets.all(10.0),
+        child: Text(stringList),
+      ),
+    );
   }
 
   @override
@@ -60,8 +97,6 @@ class OpenDataState extends State<OpenData> {
       floatingActionButton: FloatingActionButton(
           child: Icon(Icons.refresh),
           onPressed: () async {
-            await loadCSV();
-            print(data);
           }),
       appBar: AppBar(
           title: Text(widget.title),
@@ -75,21 +110,7 @@ class OpenDataState extends State<OpenData> {
 
       body: TabBarView(
         children: <Widget>[
-          ListView.builder(
-            padding: EdgeInsets.all(10.0),
-            itemBuilder: (BuildContext context, int index){
-              return Card(
-                child: Container(
-                  height: 100.0,
-                  width: double.infinity,
-                  color: Colors.deepOrange,
-                  padding: EdgeInsets.all(10.0),
-                  margin: EdgeInsets.all(10.0),
-                  child: Text(data.toString()),
-                ),
-              );
-            },
-          ),
+          _buildStringListView(),
           Padding(
             padding: EdgeInsets.all(16.0),
             child: Text(term_of_use),
