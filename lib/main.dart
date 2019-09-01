@@ -40,45 +40,47 @@ class OpenDataState extends State<OpenData> {
 
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  final _stringList = [];
+  final _stringList = []; //スプリットした文字列を格納
   Future<String> loadAsset() async {
     return await rootBundle.loadString('assets/tyoubetsuH3101.csv');
   }
 
   void _buildStringList() async {
+    //文字列の塊を作る
     setState(() {
-      loadAsset().then((String value){
+      loadAsset().then((String value) { //
         setState(() {
           print(value);
           var _splitString = value.split("\n");
-          if(_splitString.length > _stringList.length){
+          if (_splitString.length > _stringList.length) {
             _stringList.addAll([]..length = _splitString.length);
-            for(var i=0; i<_stringList.length; i++) {
+            for (var i = 0; i < _stringList.length; i++) {
               _stringList[i] = _splitString[i];
             }
           }
         });
       });
     });
-}
+  }
 
-  Widget _buildStringListView() {
+  Widget _buildStringListView() { //リスト表示する
     _buildStringList();
-    return ListView.builder(
+    return ListView.builder( //リストクラス
       padding: EdgeInsets.all(10.0),
-      itemBuilder: (context, i) {
-        if (i.isOdd) return Divider();
-        final index = i ~/ 2;
-        return _buildString(_stringList[index]);
+      itemBuilder: (context, i) { //一行ごとに処理を行う
+        if (i.isOdd) return Divider(); //奇数行に線追加
+        final index = i ~/ 2; //行数を２で割った整数値
+        return _buildString(_stringList[index]); //偶数行でアイテムを表示する。
       },
+      itemCount: _stringList.length,
     );
   }
 
-  Widget _buildString(var stringList){
+  Widget _buildString(var stringList){ //リストのアイテムを作成
     return Card(
       child: Container(
         height: 100.0,
-        width: double.infinity,
+        width: double.infinity, //無限大
         color: Colors.deepOrange,
         padding: EdgeInsets.all(10.0),
         margin: EdgeInsets.all(10.0),
@@ -90,7 +92,7 @@ class OpenDataState extends State<OpenData> {
   @override
   Widget build(BuildContext context) => DefaultTabController(
     length: 2, //タブの数
-    child: Scaffold(
+    child: Scaffold( //appbarなどを使用するため
       key: _scaffoldKey,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FloatingActionButton(
@@ -106,11 +108,10 @@ class OpenDataState extends State<OpenData> {
               ]
           )
       ),
-
-      body: TabBarView(
+      body: TabBarView( //タブ表示
         children: <Widget>[
-          _buildStringListView(),
-          Padding(
+          _buildStringListView(), //ホーム
+          Padding( //利用条件
             padding: EdgeInsets.all(16.0),
             child: Text(term_of_use),
           ),
