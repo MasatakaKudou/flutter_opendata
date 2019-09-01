@@ -48,14 +48,14 @@ class OpenDataState extends State<OpenData> {
   void _buildStringList() async {
     //文字列の塊を作る
     setState(() {
-      loadAsset().then((String value) { //
+      loadAsset().then((String value) { // returnで返した後の操作
         setState(() {
           print(value);
-          var _splitString = value.split("\n");
-          if (_splitString.length > _stringList.length) {
-            _stringList.addAll([]..length = _splitString.length);
+          var _splitString = value.split("\n"); //データを分けたものを代入する
+          if (_splitString.length > _stringList.length) { //最初は_stringList.lengthが0だから実行される、本当はデータの更新のために用いる
+            _stringList.addAll([]..length = _splitString.length); //lengthを足してあげる
             for (var i = 0; i < _stringList.length; i++) {
-              _stringList[i] = _splitString[i];
+              _stringList[i] = _splitString[i]; //代入作業
             }
           }
         });
