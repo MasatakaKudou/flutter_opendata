@@ -42,7 +42,7 @@ class OpenDataState extends State<OpenData> {
 
   final _stringList = [];
   Future<String> loadAsset() async {
-    return await rootBundle.loadString('assets/SalesJan2009.csv');
+    return await rootBundle.loadString('assets/tyoubetsuH3101.csv');
   }
 
   void _buildStringList() async {
@@ -50,7 +50,7 @@ class OpenDataState extends State<OpenData> {
       loadAsset().then((String value){
         setState(() {
           print(value);
-          var _splitString = value.split(" ");
+          var _splitString = value.split("\n");
           if(_splitString.length > _stringList.length){
             _stringList.addAll([]..length = _splitString.length);
             for(var i=0; i<_stringList.length; i++) {
@@ -89,8 +89,7 @@ class OpenDataState extends State<OpenData> {
 
   @override
   Widget build(BuildContext context) => DefaultTabController(
-    length: 2,
-    initialIndex: 0,
+    length: 2, //タブの数
     child: Scaffold(
       key: _scaffoldKey,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
@@ -102,8 +101,8 @@ class OpenDataState extends State<OpenData> {
           title: Text(widget.title),
           bottom: TabBar(
               tabs: <Widget>[
-                Tab(text: 'ホーム', icon: Icon(Icons.home),),
-                Tab(text: '利用条件', icon: Icon(Icons.info),),
+                Tab(text: 'ホーム', icon: Icon(Icons.home)),
+                Tab(text: '利用条件', icon: Icon(Icons.info)),
               ]
           )
       ),
